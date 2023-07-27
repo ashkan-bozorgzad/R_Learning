@@ -175,6 +175,7 @@ mpg %>%
 ```
 
 ## Scatter plots
+Two numerical variables
 ```{r}
 mpg %>% 
   filter(hwy < 25) %>% 
@@ -243,9 +244,8 @@ msleep %>%
   
 ```
 
-
-
 ## Bar charts and Histograms
+One numerical variable
 ```{r}
 head(msleep)
 glimpse(msleep)
@@ -311,6 +311,155 @@ msleep %>%
   labs(x = "Tota; Sleep",
        y = NULL,
        title = "Histogram of total sleep")
+
+```
+
+## line graph
+For two numeric and one categorical variables
+```{r}
+head(Orange)
+glimpse(orange)
+```
+
+```{r}
+Orange %>% 
+  filter(Tree != "2") %>% 
+  ggplot(aes(age, circumference))+
+  geom_point()+
+  geom_smooth()+
+  facet_wrap(~Tree)+
+  theme_bw()+
+  labs(title = "Tree age and Circumference")
+
+Orange %>% 
+  filter(Tree != "2" &
+           Tree != "1") %>% 
+  ggplot(aes(age, circumference, colour = Tree))+
+  geom_point(size = 4, alpha = 0.3)+
+  geom_line(linewidth = 1)+
+  theme_minimal()+
+  labs(title = "Tree age and Circumference")
+
+```
+
+## boxplot
+One numeric one categorical variable
+```{r}
+msleep %>% 
+  drop_na(vore) %>% 
+  ggplot(aes(vore, sleep_total))+
+  geom_boxplot()+
+  theme_bw()
+
+msleep %>% 
+  drop_na(vore) %>% 
+  ggplot(aes(vore, sleep_total))+
+  geom_boxplot()+
+  coord_flip()+
+  theme_bw()
+
+msleep %>% 
+  drop_na(vore) %>% 
+  ggplot(aes(sleep_total))+
+  geom_histogram()+
+  facet_wrap(~vore)+
+  theme_bw()
+
+msleep %>% 
+  drop_na(vore) %>% 
+  ggplot(aes(sleep_total))+
+  geom_density()+
+  facet_wrap(~vore)+
+  theme_bw()
+
+msleep %>% 
+  drop_na(vore) %>% 
+  ggplot(aes(sleep_total, colour = vore))+
+  geom_density()+
+  theme_bw()
+
+msleep %>% 
+  drop_na(vore) %>% 
+  ggplot(aes(sleep_total, fill = vore))+
+  geom_density(alpha = 0.2)+
+  theme_bw()
+
+msleep %>% 
+  drop_na(vore) %>% 
+  filter(vore %in% c("carni", "omni")) %>% 
+  #filter(vore == "carni" | vore == "omni") %>% 
+  ggplot(aes(sleep_total, fill = vore))+
+  geom_density(alpha = 0.2)+
+  theme_bw()
+```
+
+## Bar charts
+Two categorical variables
+```{r}
+head(starwars)
+glimpse(starwars)
+```
+
+```{r}
+starwars %>% 
+  filter(hair_color == "black" |
+         hair_color == "brown") %>% 
+  drop_na(sex) %>% 
+  ggplot(aes(hair_color, fill = sex))+
+  geom_bar(position = "dodge", alpha = 0.5)+
+  theme_bw()
+
+starwars %>% 
+  filter(hair_color == "black" |
+         hair_color == "brown") %>% 
+  drop_na(sex) %>% 
+  ggplot(aes(hair_color, fill = sex))+
+  geom_bar(position = "dodge", alpha = 0.5)+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())+
+  labs(title = "Gender and Hair colour",
+       x = "Hair Colur",
+       y = "Number")
+
+starwars %>% 
+  filter(hair_color == "black" |
+         hair_color == "brown") %>% 
+  drop_na(sex) %>% 
+  ggplot(aes(hair_color, fill = sex))+
+  geom_bar(alpha = 0.5)+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())+
+  labs(title = "Gender and Hair colour",
+       x = "Hair Colur",
+       y = "Number")
+
+starwars %>% 
+  filter(hair_color == "black" |
+         hair_color == "brown") %>% 
+  drop_na(sex) %>% 
+  ggplot(aes(hair_color, fill = sex))+
+  geom_bar(position = "fill", alpha = 0.5)+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())+
+  labs(title = "Gender and Hair colour",
+       x = "Hair Colur",
+       y = "Number")
+
+starwars %>% 
+  filter(hair_color %in% c("black", "brown")) %>% 
+  drop_na(sex) %>% 
+  ggplot(aes(sex))+
+  geom_bar(aes(fill = sex), alpha = 0.5)+
+  facet_wrap(~ hair_color)+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())+
+  labs(title = "Gender and Hair colour",
+       x = "Hair Colur",
+       y = "Number")
 
 ```
 
