@@ -17,6 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Loading packages
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
+library(gapminder)
 ```
 
 ## Basics
@@ -240,12 +241,10 @@ msleep %>%
        y = "Brain Weight",
        title = "Brain and Body Weight")+
   theme_minimal()
-
-  
 ```
 
 ## Bar charts and Histograms
-One numerical variable
+One numerical variable (density, box plot, violin plots can be used)
 ```{r}
 head(msleep)
 glimpse(msleep)
@@ -462,6 +461,83 @@ starwars %>%
        y = "Number")
 
 ```
+
+## some example
+```{r}
+head(gapminder)
+glimpse(gapminder)
+```
+
+```{r}
+gapminder %>% 
+  filter(continent %in% c("Africa", "Europe")) %>% 
+  filter(gdpPercap < 30000) %>% 
+  ggplot(aes(x = gdpPercap,
+             y = lifeExp,
+             size = pop,
+             color = year))+
+  geom_point()+
+  facet_wrap(~continent)+
+  labs(title = "Life expectancy explained by GDP",
+       x = "GDP per capita",
+       y = "Life expectancy")
+
+```
+
+##Error Bars
+```{r}
+head(ToothGrowth)
+glimpse(ToothGrowth)
+```
+
+```{r}
+ToothGrowth %>% 
+  filter(supp == "VC") %>% 
+  mutate(dose = as.factor(dose)) %>% 
+  group_by(dose) %>% 
+  summarise(mean_len = mean(len),
+            sd_len = sd(len))
+ 
+ToothGrowth %>% 
+  filter(supp == "VC") %>% 
+  mutate(dose = as.factor(dose)) %>% 
+  group_by(dose) %>% 
+  summarise(mean_len = mean(len),
+            sd_len = sd(len)) %>% 
+  ggplot(aes(x = dose, y = mean_len))+
+  geom_point(size = 3,
+             colour = "Blue")+
+  geom_errorbar(aes(x = dose,
+                    ymin = mean_len - sd_len,
+                    ymax = mean_len + sd_len,
+                    width = 0.05))+
+  labs(title = "Average tooth growth for VC supplement group")+
+  xlab("Dose")+
+  ylab("Average tooth growth")+
+  theme_bw()+
+  theme(panel.grid.major = element_blank())
+
+ToothGrowth %>% 
+  filter(supp == "VC") %>% 
+  mutate(dose = as.factor(dose)) %>% 
+  group_by(dose) %>% 
+  summarise(mean_len = mean(len),
+            sd_len = sd(len)) %>% 
+  ggplot(aes(x = dose, y = mean_len))+
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5)+
+  geom_errorbar(aes(x = dose,
+                    ymin = mean_len - sd_len,
+                    ymax = mean_len + sd_len,
+                    width = 0.05))+
+  labs(title = "Average tooth growth for VC supplement group")+
+  xlab("Dose")+
+  ylab("Average tooth growth")+
+  theme_bw()+
+  theme(panel.grid.major = element_blank())
+```
+
 
 
 
