@@ -16,8 +16,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Loading packages
 ```{r, warning=FALSE, message=FALSE}
-library(tidyverse)
 library(gapminder)
+library(car)
+library(forcats)
+library(tidyverse)
 ```
 
 ## Basics
@@ -317,7 +319,7 @@ msleep %>%
 For two numeric and one categorical variables
 ```{r}
 head(Orange)
-glimpse(orange)
+glimpse(Orange)
 ```
 
 ```{r}
@@ -538,7 +540,162 @@ ToothGrowth %>%
   theme(panel.grid.major = element_blank())
 ```
 
+## Lollipop Graph
+Between a categorical and numerical variable
+```{r}
+msleep %>% 
+  group_by(order) %>% 
+  summarise(mean_sleep = mean(sleep_total)) %>% 
+  mutate(order = fct_reorder(order, mean_sleep)) %>% 
+  ggplot(aes(x = order, y = mean_sleep))+
+  geom_point(size = 3,
+             colour = "orange")+
+  geom_segment(aes(x = order, # x of the starting point of all line
+                   y = mean(msleep$sleep_total), # y of starting point
+                   xend = order,  # x of the end points of lines
+                   yend = mean_sleep),
+               colour = "gray")+
+  geom_hline(yintercept = mean(msleep$sleep_total),
+             colour = "gray",
+             linewidth = 1)+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())+
+  labs(title = "Average sleep time of mamals by order",
+       x = "",
+       y = "Hours")
+```
 
+## Advanced ggplot 
+```{r}
+head(Salaries)
+glimpse(Salaries)
+```
+
+```{r}
+Salaries %>% 
+  ggplot(aes(x = yrs.since.phd,
+             y = salary,
+             color = rank))+
+  geom_point()+
+  theme_bw()
+
+Salaries %>% 
+  ggplot(aes(x = yrs.since.phd, y = salary))+
+  geom_jitter(aes(colour = rank, shape = discipline))+
+  geom_smooth(method = lm)+
+  facet_wrap(~sex)+
+  theme_bw()+
+  labs(title = "Salary vs years since PhD",
+       x = "Years since PhD",
+       y = "Income",
+       colour = "Position",
+       shape = "Research Area")
+
+Salaries %>% 
+  filter(salary < 150000) %>% 
+  ggplot(aes(x = rank, y = salary, fill = sex))+
+  geom_boxplot(alpha = 0.5)+
+  theme_bw()+
+  labs(title = "Faculty Salary by Rank and Gender",
+       x = "",
+       y = "",
+       fill = "Gender")
+
+Salaries %>% 
+  filter(salary < 150000) %>% 
+  ggplot(aes(x = rank, y = salary, fill = sex))+
+  geom_boxplot(alpha = 0.5)+
+  scale_x_discrete(breaks = c("AsstProf",
+                              "AssocProf",
+                              "Prof"),
+                   labels = c("Assistant\nProfessor",
+                              "Associate\nProfessor",
+                              "Full\nProfessor"))+
+  scale_y_continuous(breaks = c(50000, 100000, 150000, 200000),
+                     labels = c("$50K", "$100K", "$150K" ,"$200K"))+
+  theme_bw()+
+  labs(title = "Faculty Salary by Rank and Gender",
+       x = "",
+       y = "",
+       fill = "Gender")
+
+Salaries %>% 
+  filter(salary < 150000) %>% 
+  ggplot(aes(x = rank, y = salary, fill = sex))+
+  geom_boxplot(alpha = 0.5)+
+  scale_x_discrete(breaks = c("AsstProf",
+                              "AssocProf",
+                              "Prof"),
+                   labels = c("Assistant\nProfessor",
+                              "Associate\nProfessor",
+                              "Full\nProfessor"))+
+  scale_y_continuous(breaks = c(50000, 100000, 150000, 200000),
+                     labels = c("$50K", "$100K", "$150K" ,"$200K"))+
+  theme_bw()+
+  theme(legend.position = c(0.11, 0.78))+
+  labs(title = "Faculty Salary by Rank and Gender",
+       x = "",
+       y = "",
+       fill = "Gender")
+
+Salaries %>% 
+  mutate(discipline = factor(discipline,
+                             levels = c("A", "B"),
+                             labels = c("Agriculture", "Biology"))) %>% 
+  ggplot(aes(yrs.since.phd, salary))+
+  geom_point(aes(colour = rank), alpha = 0.5)+
+  geom_smooth()+
+  facet_grid(sex~discipline)+
+  theme_bw()+
+  theme(title = element_text(colour = "steelblue", face = "bold"))+
+  labs(title = "Salary vs years since PhD",
+       x = "Number of years since phD",
+       y = "Current salary",
+       color = "position")
+```
+
+## Ggplot Colors
+
+```{r, warning=FALSE, message=FALSE}
+library(RColorBrewer)
+```
+
+```{r}
+display.brewer.all(colorblindFriendly = TRUE)
+
+mpg %>% 
+  ggplot(aes(displ, hwy, color = drv))+
+  geom_jitter(size = 3)+
+  scale_color_brewer(palette = "Set2")+
+  theme_minimal()
+
+mpg %>% 
+  ggplot(aes(displ, hwy))+
+  geom_jitter(color = "steelblue",
+              size = 3)+
+  theme_minimal()
+
+mpg %>% 
+  ggplot(aes(displ, hwy, color = drv))+
+  geom_jitter(size = 3)+
+  scale_color_manual(values = 
+                       c("4" = "darkblue",
+                         "f" = "darkred",
+                         "r" = "darkgreen"))+
+  theme_minimal()
+
+mpg %>% 
+  ggplot(aes(displ, hwy, color = drv))+
+  geom_jitter(size = 3)+
+  scale_color_manual(values = 
+                       c("4" = "#719AC0",
+                         "f" = "#75B99C",
+                         "r" = "#C98D71"))+
+  theme_minimal()
+
+```
 
 
 ## Session Information
